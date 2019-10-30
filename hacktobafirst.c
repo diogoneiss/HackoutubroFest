@@ -18,6 +18,7 @@ void openMP2() {
 }
 
 int main(){
+    long LIMITE_MAX = 2000000;
     double initial = omp_get_wtime();
     printf("Região sequencial 1. Thread master.  Número de threads: %d\n", omp_get_num_threads());
     printf("Numero de processadores: %d\n", omp_get_num_procs());
@@ -38,6 +39,19 @@ int main(){
     printf("Numero de processadores: %d\n", omp_get_num_procs());
     printf("Terminando o programa...\n");
     double end = omp_get_wtime();
+    
+    if (LIMITE_MAX <= 1)
+    soma = 0;
+  else {
+    soma = 1;
+ 
+	#pragma omp parallel for private (contaPrimo) reduction(+:soma) schedule (dynamic,MAX_CHUNK)
+    for (n = 3; n < LIMITE_MAX; n += 2){
+      contaPrimo = ehPrimo(n);
+      #pragma omp critical
+      soma = soma + contaPrimo;
+    }
+  }
     double time = end - initial;
     printf("Número total de primos: %ld\n", soma);
     
